@@ -8,14 +8,12 @@ test('has title', async ({ page }: { page: Page }) => {
 test('check broken links', async ({ page }: { page: Page }) => {
   await page.goto('https://javan.co.id'); 
   
-  // Ambil semua tautan di halaman
   const links = await page.$$eval('a', (links) => links.map((link) => link.href));
   
   const maxLinksToTest = 10; 
   for (let i = 0; i < Math.min(maxLinksToTest, links.length); i++) {
     const link = links[i];
     
-    // Mengunjungi setiap link dan memeriksa statusnya
     const response: Response | null = await page.goto(link);
     
     if (response?.status() !== 200) {
