@@ -152,3 +152,83 @@ test('check broken links on digital reports page', async ({ page }: { page: Page
     }
 });
 
+test('Check behavior submit form Contact Us - HIGO with valid data', async ({ page }) => {
+    await page.goto('https://higo.id/contact-us');
+    await page.waitForSelector('form');
+    await page.fill('input[placeholder="ex.Clara"]', 'Test Calon QA HIGO');
+    await page.fill('input[placeholder="clara@gmail.com"]', 'testhigo@yopmail.com');
+    await page.fill('input[placeholder="+628******"]', '+6281234567890');
+    await page.fill('input[placeholder="ex.HIGO"]', 'HIGO');
+    await page.selectOption('select', { label: 'HIGOspot' }); 
+    await page.fill('textarea[placeholder="Tulis pesan kamu"]', 'Test pesan otomatis dari Playwright.');
+    await page.click('button:has-text("Submit")');
+    const successMessage = page.locator('div.rounded.border.border-green-200.bg-green-50');
+    await expect(successMessage).toBeVisible();
+    const messageText = await successMessage.textContent();
+    console.log('Pesan Sukses:', messageText);
+    await expect(successMessage).toHaveText('Pesan Anda berhasil terkirim.');
+  });
+
+test('Check behavior submit form with all fields empty', async ({ page }) => {
+    await page.goto('https://higo.id/contact-us');
+    await page.waitForSelector('form');
+    await page.click('button:has-text("Submit")');
+    const nameError = page.locator('p.text-xs.text-red-500:has-text("Isi nama kamu")');
+    const emailError = page.locator('p.text-xs.text-red-500:has-text("Isi email kamu")');
+    const phoneError = page.locator('p.text-xs.text-red-500:has-text("Isi dengan nomor telpon kamu")');
+    const messageError = page.locator('p.text-xs.text-red-500:has-text("Isi dengan pesan kamu")');
+    await expect(nameError).toBeVisible();
+    await expect(emailError).toBeVisible();
+    await expect(phoneError).toBeVisible();
+    await expect(messageError).toBeVisible();
+    console.log('Error Name:', await nameError.textContent());
+    console.log('Error Email:', await emailError.textContent());
+    console.log('Error Phone:', await phoneError.textContent());
+    console.log('Error Message:', await messageError.textContent());
+  });
+  
+test('Check behavior submit form with invalid email', async ({ page }) => {
+    await page.goto('https://higo.id/contact-us');
+    await page.waitForSelector('form');
+    await page.fill('input[placeholder="ex.Clara"]', 'Test Negative Case');
+    await page.fill('input[placeholder="clara@gmail.com"]', 'invalid-email'); // Email invalid
+    await page.fill('input[placeholder="+628******"]', '+6281234567890');
+    await page.fill('input[placeholder="ex.HIGO"]', 'HIGO');
+    await page.selectOption('select', { label: 'HIGOspot' });
+    await page.fill('textarea[placeholder="Tulis pesan kamu"]', 'Test pesan dengan email invalid.');
+    const submitButton = page.locator('button:has-text("Submit")');
+    await expect(submitButton).toBeDisabled();
+    const emailError = page.locator('text=Isi email kamu');
+    await expect(emailError).toBeVisible();
+    console.log('Error Email:', await emailError.textContent());
+  });
+
+test('Check behavior submit form with invalid phone number', async ({ page }) => {
+    await page.goto('https://higo.id/contact-us');
+    await page.waitForSelector('form');
+    await page.fill('input[placeholder="ex.Clara"]', 'Test Negative Case');
+    await page.fill('input[placeholder="clara@gmail.com"]', 'testhigo@yopmail.com');
+    await page.fill('input[placeholder="+628******"]', '123abc'); 
+    await page.fill('input[placeholder="ex.HIGO"]', 'HIGO');
+    await page.selectOption('select', { label: 'HIGOspot' });
+    await page.fill('textarea[placeholder="Tulis pesan kamu"]', 'Test pesan dengan nomor telepon invalid.');
+    const submitButton = page.locator('button:has-text("Submit")');
+    await expect(submitButton).toBeDisabled();
+    const phoneError = page.locator('text=Isi dengan nomor telpon kamu'); 
+    await expect(phoneError).toBeVisible();
+  });
+
+test('Check behavior submit form with overly long input', async ({ page }) => {
+    await page.goto('https://higo.id/contact-us');
+    await page.waitForSelector('form');
+    const longText = 'a'.repeat(10000); // t breaks when I input 100,000 characters - Perhaps it would be a good idea to set a maxlength attribute for each field in the form
+    await page.fill('input[placeholder="ex.Clara"]', longText);
+    await page.fill('input[placeholder="clara@gmail.com"]', 'testhigo@yopmail.com');
+    await page.fill('input[placeholder="+628******"]', '+6281234567890');
+    await page.fill('input[placeholder="ex.HIGO"]', longText);
+    await page.selectOption('select', { label: 'HIGOspot' });
+    await page.fill('textarea[placeholder="Tulis pesan kamu"]', longText);
+    await page.click('button:has-text("Submit")');
+    const successMessage = page.locator('div.rounded.border.border-green-200.bg-green-50');
+    await expect(successMessage).not.toBeVisible();
+  });
