@@ -21,6 +21,7 @@ test('check broken links', async ({ page }: { page: Page }) => {
     }
   }
 });
+
 test('invalid email does not trigger specific error', async ({ page }: { page: Page }) => {
     await page.goto('https://javan.co.id/contact');
 
