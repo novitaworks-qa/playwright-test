@@ -18,7 +18,6 @@ test('check broken links on homepage', async ({ page }: { page: Page }) => {
     }
 });
 
-
 test('check if about-us page redirects to LinkedIn', async ({ page }: { page: Page }) => {
     await page.goto('https://higo.id/about-us');
     const linkedInLink = await page.locator('a:has-text("Jadi bagian dari HIGO")');
@@ -152,3 +151,4 @@ test('check broken links on digital reports page', async ({ page }: { page: Page
         }
     }
 });
+
