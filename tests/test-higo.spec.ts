@@ -221,7 +221,7 @@ test('Check behavior submit form with invalid phone number', async ({ page }) =>
 test('Check behavior submit form with overly long input', async ({ page }) => {
     await page.goto('https://higo.id/contact-us');
     await page.waitForSelector('form');
-    const longText = 'a'.repeat(10000); // t breaks when I input 100,000 characters - Perhaps it would be a good idea to set a maxlength attribute for each field in the form
+    const longText = 'a'.repeat(10000); // it breaks when I input 100,000 characters - Perhaps it would be a good idea to set a maxlength attribute for each field in the form
     await page.fill('input[placeholder="ex.Clara"]', longText);
     await page.fill('input[placeholder="clara@gmail.com"]', 'testhigo@yopmail.com');
     await page.fill('input[placeholder="+628******"]', '+6281234567890');
